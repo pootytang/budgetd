@@ -5,6 +5,7 @@ defmodule Budgetd.Auth.User do
   @foreign_key_type :binary_id
   schema "users" do
     field :email, :string
+    field :name, :string
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
     field :is_oauth_user, :boolean, default: false
@@ -131,11 +132,13 @@ defmodule Budgetd.Auth.User do
     false
   end
 
-  def oauth_registration_changeset(user, attrs, opts \\ []) do
+  def oauth_registration_changeset(user, attrs, _opts \\ []) do
+    IO.inspect("Creating OAuth registration changeset for user with attrs: #{inspect(attrs)}")
+
     user
-    |> cast(attrs, [:email, :first_name, :last_name])
-    |> validate_required([:email, :first_name, :last_name])
-    |> validate_email(opts)
+    |> cast(attrs, [:email, :name])
+    |> validate_required([:email, :name])
+    |> validate_email([])
     |> put_change(:is_oauth_user, true)
   end
 end

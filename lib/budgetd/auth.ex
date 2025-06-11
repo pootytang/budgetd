@@ -95,6 +95,8 @@ defmodule Budgetd.Auth do
 
   """
   def register_oauth_user(attrs) do
+    IO.inspect(attrs, label: "Registering OAuth user with attributes")
+
     %User{}
     |> User.oauth_registration_changeset(attrs)
     |> Repo.insert()

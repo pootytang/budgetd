@@ -1,5 +1,6 @@
 defmodule BudgetdWeb.Router do
   use BudgetdWeb, :router
+  require Logger
 
   import BudgetdWeb.UserAuth
 
@@ -24,6 +25,7 @@ defmodule BudgetdWeb.Router do
   scope "/", BudgetdWeb do
     pipe_through :browser
 
+    IO.inspect("I AM HERE")
     get "/", PageController, :home
   end
 
@@ -78,8 +80,7 @@ defmodule BudgetdWeb.Router do
   end
 
   scope "/auth", BudgetdWeb do
-    pipe_through [:browser, :redirect_if_user_is_authenticated]
-
+    pipe_through [:browser]
     # Handled by Ueberauth
     get "/:provider", AuthController, :request
     get "/:provider/callback", AuthController, :callback

@@ -9,21 +9,27 @@ defmodule BudgetdWeb.AuthController do
   plug Ueberauth
 
   # def request(conn, params) do
-  #   Logger.info("Request called with params: #{inspect(params)}")
+  #   IO.inspect("Request called with params: #{inspect(params)}")
 
   #   Phoenix.Controller.redirect(conn, to: Ueberauth.Strategy.Helpers.callback_url(conn))
   # end
 
+  def callback(%{assigns: %{ueberauth_failure: %Ueberauth.Failure{}}} = conn, _params) do
+    conn
+    |> put_flash(:error, "Failed to authenticate")
+    |> redirect(to: ~p"/")
+  end
+
   def callback(%{assigns: %{ueberauth_auth: auth}} = conn, params) do
-    Logger.info("Callback called with params: #{inspect(params)}")
+    IO.inspect("Callback called with params: #{inspect(params)}")
 
     email = auth.info.email
-    Logger.info("Authentication callback received for email: #{email}")
+    IO.inspect("Authentication callback received for email: #{email}")
 
     case Auth.get_user_by_email(email) do
       nil ->
         # User does not exist, create a new user
-        Logger.info("No user found for email: #{email}, creating new user.")
+        IO.inspect("No user found for email: #{email}, creating new user.")
 
         user_params = %{
           email: email,
@@ -34,7 +40,7 @@ defmodule BudgetdWeb.AuthController do
 
         case Auth.register_oauth_user(user_params) do
           {:ok, user} ->
-            Logger.info("New user created for email: #{email}, logging in.")
+            IO.inspect("New user created for email: #{email}, logging in.")
             UserAuth.log_in_user(conn, user)
 
           {:error, changeset} ->
@@ -48,7 +54,7 @@ defmodule BudgetdWeb.AuthController do
         end
 
       user ->
-        Logger.info("User found for email: #{email}, logging in.")
+        IO.inspect("User found for email: #{email}, logging in.")
         UserAuth.log_in_user(conn, user)
     end
 

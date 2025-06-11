@@ -34,6 +34,7 @@ defmodule BudgetdWeb.UserAuth do
   """
   def log_in_user(conn, user, params \\ %{}) do
     user_return_to = get_session(conn, :user_return_to)
+    IO.inspect("Logging in user: #{user.email}")
 
     conn
     |> create_or_extend_session(user, params)
