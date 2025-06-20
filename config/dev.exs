@@ -2,8 +2,8 @@ import Config
 
 # Configure your database
 config :budgetd, Budgetd.Repo,
-  username: "gelane",
-  password: "Th3J@cks0ns",
+  username: "phx",
+  password: "ph03n1x",
   hostname: "localhost",
   database: "budgetd_dev",
   stacktrace: true,

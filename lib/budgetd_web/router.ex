@@ -14,9 +14,9 @@ defmodule BudgetdWeb.Router do
     plug :fetch_current_scope_for_user
   end
 
-  pipeline :redirect_if_user_is_authenticated do
-    plug :redirect_if_user_is_authenticated
-  end
+  # pipeline :redirect_if_user_is_authenticated do
+  #   plug :redirect_if_user_is_authenticated
+  # end
 
   pipeline :api do
     plug :accepts, ["json"]
@@ -25,7 +25,6 @@ defmodule BudgetdWeb.Router do
   scope "/", BudgetdWeb do
     pipe_through :browser
 
-    IO.inspect("I AM HERE")
     get "/", PageController, :home
   end
 
@@ -58,6 +57,8 @@ defmodule BudgetdWeb.Router do
 
     live_session :require_authenticated_user,
       on_mount: [{BudgetdWeb.UserAuth, :require_authenticated}] do
+      live "/budgets", BudgetLive.List
+      live "/budgets/new", BudgetLive.List, :new
       live "/users/settings", UserLive.Settings, :edit
       live "/users/settings/confirm-email/:token", UserLive.Settings, :confirm_email
     end
@@ -71,7 +72,7 @@ defmodule BudgetdWeb.Router do
     live_session :current_user,
       on_mount: [{BudgetdWeb.UserAuth, :mount_current_scope}] do
       live "/users/register", UserLive.Registration, :new
-      live "/users/log-in", UserLive.Login, :new
+      live "/users/log-in", UserLive.Login, :login
       live "/users/log-in/:token", UserLive.Confirmation, :new
     end
 

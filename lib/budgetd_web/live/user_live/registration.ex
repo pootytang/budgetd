@@ -33,6 +33,10 @@ defmodule BudgetdWeb.UserLive.Registration do
             Create an account
           </.button>
         </.form>
+
+        <div class="divider">or</div>
+
+        <Layouts.google_button />
       </div>
     </Layouts.app>
     """
