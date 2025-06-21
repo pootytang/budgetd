@@ -523,7 +523,12 @@ defmodule BudgetdWeb.CoreComponents do
     """
   end
 
-  # helpful https://hexdocs.pm/phoenix_live_view/1.1.0-rc.1/Phoenix.LiveView.JS.html
+  # from https://hexdocs.pm/phoenix_live_view/1.1.0-rc.1/Phoenix.LiveView.JS.html
+  attr :on_cancel, :map, doc: "Map to call when the modal is cancelled i.e. JS.navigate/2"
+  attr :onclick, :map, doc: "Map to call when the modal close button is clicked"
+
+  slot :form_component, doc: "The form component to render inside the modal"
+
   def show_modal(assigns) do
     ~H"""
     <dialog
@@ -541,9 +546,6 @@ defmodule BudgetdWeb.CoreComponents do
         {render_slot(@form_component)}
       </div>
     </dialog>
-    <div class="flex justify-end">
-      {render_slot(@action)}
-    </div>
     """
   end
 end

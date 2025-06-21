@@ -26,13 +26,14 @@ defmodule BudgetdWeb.BudgetLive.List do
           current_user={@current_scope}
         />
       </:form_component>
-      <:action>
-        <.link navigate={~p"/budgets/new"} class="btn btn-soft btn-primary rounded-lg">
-          <.icon name="hero-plus" class="h-5 w-5" />
-          <span>New Budget</span>
-        </.link>
-      </:action>
     </.show_modal>
+
+    <div class="flex justify-end mt-8">
+      <.link navigate={~p"/budgets/new"} class="btn btn-soft btn-primary rounded-lg">
+        <.icon name="hero-plus" class="h-5 w-5" />
+        <span>New Budget</span>
+      </.link>
+    </div>
 
     <.table id="budgets" rows={@budgets}>
       <:col :let={budget} label="Name">{budget.name}</:col>
