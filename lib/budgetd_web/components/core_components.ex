@@ -522,4 +522,28 @@ defmodule BudgetdWeb.CoreComponents do
     </footer>
     """
   end
+
+  # helpful https://hexdocs.pm/phoenix_live_view/1.1.0-rc.1/Phoenix.LiveView.JS.html
+  def show_modal(assigns) do
+    ~H"""
+    <dialog
+      id="create-budget-modal"
+      title="Create Budget"
+      on_cancel={@on_cancel}
+      class="modal modal-open"
+    >
+      <div class="modal-box">
+        <form method="dialog" class="modal-backdrop">
+          <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" phx-click={@onclick}>
+            ✕
+          </button>
+        </form>
+        {render_slot(@form_component)}
+      </div>
+    </dialog>
+    <div class="flex justify-end">
+      {render_slot(@action)}
+    </div>
+    """
+  end
 end

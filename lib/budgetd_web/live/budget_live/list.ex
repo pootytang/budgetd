@@ -14,35 +14,26 @@ defmodule BudgetdWeb.BudgetLive.List do
 
   def render(assigns) do
     ~H"""
-    <dialog
+    <.show_modal
       :if={@live_action == :new}
-      id="create-budget-modal"
-      title="Create Budget"
       on_cancel={JS.navigate(~p"/budgets", replace: true)}
-      class="modal modal-open"
+      onclick={JS.navigate(~p"/budgets", replace: true)}
     >
-      <div class="modal-box">
-        <form method="dialog" class="modal-backdrop">
-          <button
-            class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-            onclick={JS.navigate(~p"/budgets", replace: true)}
-          >
-            ✕
-          </button>
-        </form>
+      <:form_component>
         <.live_component
           module={BudgetdWeb.BudgetLive.CreateDialog}
           id="create-budget"
           current_user={@current_scope}
         />
-      </div>
-    </dialog>
-    <div class="flex justify-end">
-      <.link navigate={~p"/budgets/new"} class="btn btn-soft btn-primary rounded-lg">
-        <.icon name="hero-plus" class="h-5 w-5" />
-        <span>New Budget</span>
-      </.link>
-    </div>
+      </:form_component>
+      <:action>
+        <.link navigate={~p"/budgets/new"} class="btn btn-soft btn-primary rounded-lg">
+          <.icon name="hero-plus" class="h-5 w-5" />
+          <span>New Budget</span>
+        </.link>
+      </:action>
+    </.show_modal>
+
     <.table id="budgets" rows={@budgets}>
       <:col :let={budget} label="Name">{budget.name}</:col>
       <:col :let={budget} label="Category">{budget.category}</:col>
