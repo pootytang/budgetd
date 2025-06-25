@@ -5,8 +5,10 @@ defmodule BudgetdWeb.BudgetLive.List do
 
   def mount(_params, _session, socket) do
     budgets =
-      Mimo.list_budgets()
-      |> Budgetd.Repo.preload(:user)
+      Mimo.list_budgets(
+        user: socket.assigns.current_scope.user,
+        preload: :user
+      )
 
     socket = assign(socket, budgets: budgets)
     {:ok, socket}
@@ -16,6 +18,7 @@ defmodule BudgetdWeb.BudgetLive.List do
     ~H"""
     <.show_modal
       :if={@live_action == :new}
+      id="create-budget-modal"
       on_cancel={JS.navigate(~p"/budgets", replace: true)}
       onclick={JS.navigate(~p"/budgets", replace: true)}
     >
@@ -23,7 +26,7 @@ defmodule BudgetdWeb.BudgetLive.List do
         <.live_component
           module={BudgetdWeb.BudgetLive.CreateDialog}
           id="create-budget"
-          current_user={@current_scope}
+          current_user={@current_scope.user}
         />
       </:form_component>
     </.show_modal>
@@ -42,6 +45,7 @@ defmodule BudgetdWeb.BudgetLive.List do
       <:col :let={budget} label="Start Date">{budget.start_date}</:col>
       <:col :let={budget} label="End Date">{budget.end_date}</:col>
       <:col :let={budget} label="User Name">{budget.user.name}</:col>
+      <:col :let={budget} label="Actions"><.link navigate={~p"/budgets/#{budget}"}>View</.link></:col>
     </.table>
     """
   end

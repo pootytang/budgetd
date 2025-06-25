@@ -526,17 +526,13 @@ defmodule BudgetdWeb.CoreComponents do
   # from https://hexdocs.pm/phoenix_live_view/1.1.0-rc.1/Phoenix.LiveView.JS.html
   attr :on_cancel, :map, doc: "Map to call when the modal is cancelled i.e. JS.navigate/2"
   attr :onclick, :map, doc: "Map to call when the modal close button is clicked"
+  attr :id, :string, required: true
 
   slot :form_component, doc: "The form component to render inside the modal"
 
   def show_modal(assigns) do
     ~H"""
-    <dialog
-      id="create-budget-modal"
-      title="Create Budget"
-      on_cancel={@on_cancel}
-      class="modal modal-open"
-    >
+    <dialog id={@id} title="Create Budget" on_cancel={@on_cancel} class="modal modal-open">
       <div class="modal-box">
         <form method="dialog" class="modal-backdrop">
           <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" phx-click={@onclick}>

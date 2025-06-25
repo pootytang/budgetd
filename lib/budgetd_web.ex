@@ -52,6 +52,8 @@ defmodule BudgetdWeb do
     quote do
       use Phoenix.LiveView
 
+      import Budgetd.Guards
+
       unquote(html_helpers())
     end
   end
