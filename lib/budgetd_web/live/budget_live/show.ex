@@ -4,7 +4,7 @@ defmodule BudgetdWeb.BudgetLive.Show do
 
   alias Budgetd.Mimo
 
-  def mount(%{"budget_id" => id}, _session, socket) when is_uuid(id) do
+  def mount(%{"budget_id" => id} = params, _session, socket) when is_uuid(id) do
     budget =
       Mimo.get_budget(id, user: socket.assigns.current_scope.user, preload: :user)
 
@@ -12,7 +12,9 @@ defmodule BudgetdWeb.BudgetLive.Show do
       transactions = Mimo.list_transactions(budget)
       summary = Mimo.summarize_budget_transactions(budget)
 
-      {:ok, assign(socket, budget: budget, transactions: transactions, summary: summary)}
+      {:ok,
+       assign(socket, budget: budget, transactions: transactions, summary: summary)
+       |> apply_action(params)}
     else
       socket =
         socket
@@ -32,74 +34,41 @@ defmodule BudgetdWeb.BudgetLive.Show do
     {:ok, socket}
   end
 
-  def render(assigns) do
-    ~H"""
-    <.show_modal
-      :if={@live_action == :new_transaction}
-      id="create-transaction-modal"
-      on_cancel={JS.navigate(~p"/budgets/#{@budget}", replace: true)}
-      onclick={JS.navigate(~p"/budgets", replace: true)}
-    >
-      <:form_component>
-        <.live_component
-          module={BudgetdWeb.BudgetLive.CreateTransactionDialog}
-          id="create-transaction"
-          budget={@budget}
-        />
-      </:form_component>
-    </.show_modal>
+  def apply_action(%{assigns: %{live_action: :edit_transaction}} = socket, %{
+        "transaction_id" => transaction_id
+      }) do
+    transaction = Enum.find(socket.assigns.transactions, &(&1.id == transaction_id))
 
-    <div class="bg-white rounded border border-gray-100 px-6 py-6">
-      <div class="flex justify-between items-center mb-4 space-x-2">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900">{@budget.name}</h1>
-          <p :if={@budget.description} class="text-gray-600 mt-1">{@budget.description}</p>
-        </div>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="space-y-2">
-          <% money_in = Map.get(@summary, :money_in, Decimal.new("0")) %>
-          <% money_out = Map.get(@summary, :money_out, Decimal.new("0")) %>
-          <% balance = Decimal.sub(money_in, money_out) %>
-          <div class="flex items-center space-x-2">
-            <.icon name="hero-wallet" class="w-4 h-4 text-gray-400" />
-            <span class="text-sm font-medium text-gray-500">Balance</span>
-          </div>
-          <div>
-            <.currency amount={balance} class="text-2xl font-bold" />
-          </div>
-          <div class="grid grid-cols-2 text-gray-500">
-            <div>Money In</div>
-            <div>Money Out</div>
-            <div><.currency amount={money_in} positive_class="text-gray-400" /></div>
-            <div><.currency amount={Decimal.negate(money_out)} negative_class="text-gray-400" /></div>
-          </div>
-        </div>
-        <div class="space-y-2">
-          <div class="flex items-center space-x-2">
-            <.icon name="hero-banknotes" class="w-4 h-4 text-gray-400" />
-            <span class="text-sm font-medium text-gray-500">Transactions</span>
-          </div>
-          <div class="text-gray-900">
-            <.link
-              navigate={~p"/budgets/#{@budget}/new-transaction"}
-              class="bg-blue-100 text-blue-800 hover:bg-blue-200 px-3 py-2 rounded-lg inline-flex items-center gap-2"
-            >
-              <.icon name="hero-plus" class="h-5 w-5" />
-              <span>New Transaction</span>
-            </.link>
-          </div>
-        </div>
-      </div>
-    </div>
+    if transaction do
+      assign(socket, transaction: transaction)
+    else
+      socket
+      |> put_flash(:error, "Transaction not found")
+      |> redirect(to: ~p"/budgets/#{socket.assigns.budget}")
+    end
+  end
 
-    <.table id="transactions" rows={@transactions}>
-      <:col :let={transaction} label="Description">{transaction.description}</:col>
-      <:col :let={transaction} label="Date">{transaction.effective_date}</:col>
-      <:col :let={transaction} label="Category">{transaction.category}</:col>
-      <:col :let={transaction} label="Amount"><.transaction_amount transaction={transaction} /></:col>
-    </.table>
-    """
+  def apply_action(socket, _params), do: socket
+
+  def handle_event("delete_transaction", %{"id" => transaction_id}, socket) do
+    transaction = Enum.find(socket.assigns.transactions, &(&1.id == transaction_id))
+
+    if transaction do
+      case Mimo.delete_transaction(transaction) do
+        {:ok, _} ->
+          socket =
+            socket
+            |> put_flash(:info, "Transaction deleted")
+            |> assign(transactions: Mimo.list_transactions(socket.assigns.budget))
+
+          {:noreply, socket}
+
+        {:error, _reason} ->
+          {:noreply, put_flash(socket, :error, "Failed to delete transaction")}
+      end
+    else
+      {:noreply, put_flash(socket, :error, "Transaction not found")}
+    end
   end
 
   @doc """
@@ -140,5 +109,11 @@ defmodule BudgetdWeb.BudgetLive.Show do
       {Decimal.round(@amount, 2)}
     </span>
     """
+  end
+
+  defp default_transaction do
+    %BudgetTransaction{
+      effective_date: Date.utc_today()
+    }
   end
 end

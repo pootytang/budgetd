@@ -1,0 +1,41 @@
+[debug] HANDLE EVENT "save" in BudgetdWeb.BudgetLive.Show
+  Component: BudgetdWeb.BudgetLive.TransactionDialog
+  Parameters: %{"transaction" => %{"amount" => "1", "category" => "travel", "description" => "Testing", "effective_date" => "2025-07-02", "type" => "money_in"}}
+
+[debug] QUERY OK source="budget_transactions" db=1.2ms queue=0.4ms idle=765.1ms
+
+UPDATE "budget_transactions" SET "description" = $1, "updated_at" = $2 WHERE "id" = $3 ["Testing", ~U[2025-07-02 18:11:05Z], "6a636a59-692d-404b-9bb6-3c74569014de"]
+↳ BudgetdWeb.BudgetLive.TransactionDialog.save_transaction/3, at: lib/budgetd_web/live/budget_live/transaction_diaglog.ex:61
+
+[debug] Replied in 2ms
+
+[debug] MOUNT BudgetdWeb.BudgetLive.Show
+  Parameters: %{"budget_id" => "cedf2070-78bc-4cbe-b33c-a302167830cc"}
+  Session: %{"_csrf_token" => "T8-gu1cnLOkYWrwvvKfyfUvi", "live_socket_id" => "users_sessions:4QDMtOfPLGF5gKN9r3EWBbkl-DKvS4j97L9EntCVHKs=", "user_token" => <<225, 0, 204, 180, 231, 207, 44, 97, 121, 128, 163, 125, 175, 113, 22, 5, 185, 37, 248, 50, 175, 75, 136, 253, 236, 191, 68, 158, 208, 149, 28, 171>>}
+
+[debug] QUERY OK source="users_tokens" db=0.7ms idle=771.5ms
+
+SELECT u1."id", u1."email", u1."name", u1."hashed_password", u1."is_oauth_user", u1."provider", u1."confirmed_at", u1."inserted_at", u1."updated_at", u0."authenticated_at", u0."inserted_at" FROM "users_tokens" AS u0 INNER JOIN "users" AS u1 ON u1."id" = u0."user_id" WHERE ((u0."token" = $1) AND (u0."context" = $2)) AND (u0."inserted_at" > $3::timestamp + (-(14)::numeric * interval '1 day')) [<<225, 0, 204, 180, 231, 207, 44, 97, 121, 128, 163, 125, 175, 113, 22, 5, 185, 37, 248, 50, 175, 75, 136, 253, 236, 191, 68, 158, 208, 149, 28, 171>>, "session", ~U[2025-07-02 18:11:05.242038Z]]
+↳ anonymous fn/1 in BudgetdWeb.UserAuth.mount_current_scope/2, at: lib/budgetd_web/user_auth.ex:253
+
+[debug] QUERY OK source="budgets" db=0.3ms idle=772.5ms
+
+SELECT b0."id", b0."name", b0."category", b0."description", b0."start_date", b0."end_date", b0."user_id", b0."inserted_at", b0."updated_at" FROM "budgets" AS b0 WHERE (b0."user_id" = $1) AND (b0."id" = $2) ["8e8493c3-3cbd-4c41-82b8-b38834eb5ed9", "cedf2070-78bc-4cbe-b33c-a302167830cc"]
+↳ BudgetdWeb.BudgetLive.Show.mount/3, at: lib/budgetd_web/live/budget_live/show.ex:9
+
+[debug] QUERY OK source="users" db=0.4ms idle=773.3ms
+
+SELECT u0."id", u0."email", u0."name", u0."hashed_password", u0."is_oauth_user", u0."provider", u0."confirmed_at", u0."inserted_at", u0."updated_at", u0."id" FROM "users" AS u0 WHERE (u0."id" = $1) ["8e8493c3-3cbd-4c41-82b8-b38834eb5ed9"]
+↳ BudgetdWeb.BudgetLive.Show.mount/3, at: lib/budgetd_web/live/budget_live/show.ex:9
+
+[debug] QUERY OK source="budget_transactions" db=0.4ms idle=774.1ms
+
+SELECT b0."id", b0."effective_date", b0."type", b0."category", b0."amount", b0."description", b0."budget_id", b0."inserted_at", b0."updated_at" FROM "budget_transactions" AS b0 WHERE (b0."budget_id" = $1) ORDER BY b0."effective_date" ["cedf2070-78bc-4cbe-b33c-a302167830cc"]
+↳ BudgetdWeb.BudgetLive.Show.mount/3, at: lib/budgetd_web/live/budget_live/show.ex:12
+
+[debug] QUERY OK source="budget_transactions" db=0.6ms idle=774.8ms
+
+SELECT b0."type", sum(b0."amount") FROM "budget_transactions" AS b0 WHERE (b0."budget_id" = $1) GROUP BY b0."type" ["cedf2070-78bc-4cbe-b33c-a302167830cc"]
+↳ Budgetd.Mimo.summarize_budget_transactions/1, at: lib/budgetd/mimo.ex:96
+
+[debug] Replied in 5ms

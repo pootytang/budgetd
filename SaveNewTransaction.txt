@@ -1,0 +1,10 @@
+[debug] HANDLE EVENT "save" in BudgetdWeb.BudgetLive.Show
+  Component: BudgetdWeb.BudgetLive.TransactionDialog
+  Parameters: %{"transaction" => %{"amount" => "2", "category" => "travel", "description" => "Another test", "effective_date" => "2025-07-02", "type" => "money_in"}}
+
+[debug] QUERY OK source="budget_transactions" db=1.2ms idle=1820.5ms
+
+INSERT INTO "budget_transactions" ("type","description","category","budget_id","amount","effective_date","inserted_at","updated_at","id") VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) [:money_in, "Another test", :travel, "cedf2070-78bc-4cbe-b33c-a302167830cc", Decimal.new("2"), ~D[2025-07-02], ~U[2025-07-02 18:12:55Z], ~U[2025-07-02 18:12:55Z], "5a3f5171-add7-4abd-8a2d-10a7c68ee465"]
+↳ BudgetdWeb.BudgetLive.TransactionDialog.save_transaction/3, at: lib/budgetd_web/live/budget_live/transaction_diaglog.ex:42
+
+[debug] Replied in 1ms

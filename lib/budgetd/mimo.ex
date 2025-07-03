@@ -1,5 +1,6 @@
 defmodule Budgetd.Mimo do
   import Ecto.Query, warn: false
+
   alias Budgetd.Mimo.BudgetTransaction
   alias Budgetd.Repo
   alias Budgetd.Mimo.Budget
@@ -44,6 +45,16 @@ defmodule Budgetd.Mimo do
     %BudgetTransaction{}
     |> BudgetTransaction.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def update_transaction(%BudgetTransaction{} = transaction, attrs \\ %{}) do
+    transaction
+    |> BudgetTransaction.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def delete_transaction(%BudgetTransaction{} = transaction) do
+    Repo.delete(transaction)
   end
 
   def list_transactions(budget_or_budget_id, criteria \\ [])

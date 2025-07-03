@@ -9,9 +9,7 @@ defmodule Budgetd.MimoTest do
     alias Budgetd.Mimo.Budget
 
     test "create_budget/1 with valid data creates budget" do
-      user = Budgetd.AuthFixtures.user_fixture()
-
-      attrs = valid_budget_attributes(%{user_id: user.id})
+      attrs = params_with_assocs(:budget)
 
       assert {:ok, %Budget{} = budget} = Mimo.create_budget(attrs)
       assert budget.name == attrs.name
@@ -19,7 +17,7 @@ defmodule Budgetd.MimoTest do
       assert budget.description == attrs.description
       assert budget.start_date == attrs.start_date
       assert budget.end_date == attrs.end_date
-      assert budget.user_id == user.id
+      assert budget.user_id == attrs.user_id
     end
   end
 
@@ -48,7 +46,24 @@ defmodule Budgetd.MimoTest do
   end
 
   test "list_budgets/0 returns all budgets" do
-    budget = Budgetd.MimoFixtures.budget_fixture()
-    assert Mimo.list_budgets() == [budget]
+    budgets = insert_pair(:budget)
+    assert Mimo.list_budgets() == without_preloads(budgets)
+  end
+
+  test "list_transactions/1 returns all transactions in the budget, by reference" do
+    budget = insert(:budget)
+
+    transactions = insert_pair(:budget_transaction, budget: budget)
+    _other_transactions = insert_pair(:budget_transaction)
+
+    assert Mimo.list_transactions(budget) == without_preloads(transactions)
+  end
+
+  test "list_transactions/2 returns transactions with preloads" do
+    budget = insert(:budget)
+
+    transactions = insert_pair(:budget_transaction, budget: budget)
+
+    assert Mimo.list_transactions(budget, preload: [budget: :user]) == transactions
   end
 end

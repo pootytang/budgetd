@@ -20,7 +20,7 @@ defmodule BudgetdWeb.BudgetLive.List do
       :if={@live_action == :new}
       id="create-budget-modal"
       on_cancel={JS.navigate(~p"/budgets", replace: true)}
-      onclick={JS.navigate(~p"/budgets", replace: true)}
+      onclose={JS.navigate(~p"/budgets", replace: true)}
     >
       <:form_component>
         <.live_component

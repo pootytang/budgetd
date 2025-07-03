@@ -61,6 +61,11 @@ defmodule BudgetdWeb.Router do
       live "/budgets/new", BudgetLive.List, :new
       live "/budgets/:budget_id", BudgetLive.Show
       live "/budgets/:budget_id/new-transaction", BudgetLive.Show, :new_transaction
+
+      live "/budgets/:budget_id/transactions/:transaction_id/edit",
+           BudgetLive.Show,
+           :edit_transaction
+
       live "/users/settings", UserLive.Settings, :edit
       live "/users/settings/confirm-email/:token", UserLive.Settings, :confirm_email
     end

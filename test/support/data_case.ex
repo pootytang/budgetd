@@ -24,6 +24,7 @@ defmodule Budgetd.DataCase do
       import Ecto.Changeset
       import Ecto.Query
       import Budgetd.DataCase
+      import Budgetd.Factory
     end
   end
 
