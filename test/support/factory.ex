@@ -29,6 +29,14 @@ defmodule Budgetd.Factory do
     }
   end
 
+  def budget_period_factory do
+    %Mimo.BudgetPeriod{
+      start_date: ~D[2025-01-01],
+      end_date: ~D[2025-12-31],
+      budget: build(:budget)
+    }
+  end
+
   def budget_transaction_factory do
     %Mimo.BudgetTransaction{
       effective_date: ~D[2025-01-01],

@@ -7,17 +7,21 @@ defmodule Budgetd.Mimo.BudgetPeriod do
   schema "budget_periods" do
     field :start_date, :date
     field :end_date, :date
-    field :budget_id, :binary_id
-    field :user_id, :binary_id
+    belongs_to :budget, Budgetd.Mimo.Budget
 
     timestamps(type: :utc_datetime)
   end
 
   @doc false
-  def changeset(budget_period, attrs, user_scope) do
+  def changeset(budget_period, attrs) do
     budget_period
     |> cast(attrs, [:start_date, :end_date])
     |> validate_required([:start_date, :end_date])
-    |> put_change(:user_id, user_scope.user.id)
+    |> check_constraint(:end_date,
+      name: :end_after_start,
+      message: "must end after its start date"
+    )
+    |> unique_constraint([:budget_id, :start_date])
+    |> Budgetd.Validations.validate_date_month_boundaries()
   end
 end

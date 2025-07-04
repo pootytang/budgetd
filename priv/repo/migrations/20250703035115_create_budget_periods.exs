@@ -6,14 +6,19 @@ defmodule Budgetd.Repo.Migrations.CreateBudgetPeriods do
       add :id, :binary_id, primary_key: true
       add :start_date, :date
       add :end_date, :date
-      add :budget_id, references(:budgets, on_delete: :nothing, type: :binary_id)
+      add :budget_id, references(:budgets, on_delete: :delete_all, type: :binary_id)
       add :user_id, references(:users, type: :binary_id, on_delete: :delete_all)
 
       timestamps(type: :utc_datetime)
     end
 
-    create index(:budget_periods, [:user_id])
+    create unique_index(:budget_periods, [:budget_id, :start_date])
 
-    create index(:budget_periods, [:budget_id])
+    create constraint(
+             :budget_periods,
+             :end_after_start,
+             check: "end_date > start_date",
+             comment: "Period must end after its start date"
+           )
   end
 end

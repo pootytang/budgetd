@@ -36,8 +36,8 @@ defmodule Budgetd.MimoTest do
     attrs =
       valid_budget_attributes()
       |> Map.merge(%{
-        start_date: ~D[2025-12-31],
-        end_date: ~D[2025-01-01]
+        start_date: ~D[2025-12-01],
+        end_date: ~D[2025-01-31]
       })
 
     assert {:error, %Ecto.Changeset{} = changeset} = Mimo.create_budget(attrs)

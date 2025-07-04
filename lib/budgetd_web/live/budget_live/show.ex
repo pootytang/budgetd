@@ -6,7 +6,7 @@ defmodule BudgetdWeb.BudgetLive.Show do
 
   def mount(%{"budget_id" => id} = params, _session, socket) when is_uuid(id) do
     budget =
-      Mimo.get_budget(id, user: socket.assigns.current_scope.user, preload: :user)
+      Mimo.get_budget(id, user: socket.assigns.current_scope.user, preload: [:user, :periods])
 
     if budget do
       transactions = Mimo.list_transactions(budget)
